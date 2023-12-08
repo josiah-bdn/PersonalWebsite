@@ -9,6 +9,7 @@
 /Users/josiah/Documents/projects/JosiahPersonalWebsite/Persistence/obj/Debug/net7.0/Persistence.AssemblyInfoInputs.cache
 /Users/josiah/Documents/projects/JosiahPersonalWebsite/Persistence/obj/Debug/net7.0/Persistence.AssemblyInfo.cs
 /Users/josiah/Documents/projects/JosiahPersonalWebsite/Persistence/obj/Debug/net7.0/Persistence.csproj.CoreCompileInputs.cache
+/Users/josiah/Documents/projects/JosiahPersonalWebsite/Persistence/obj/Debug/net7.0/Persistence.sourcelink.json
 /Users/josiah/Documents/projects/JosiahPersonalWebsite/Persistence/obj/Debug/net7.0/Persistence.csproj.CopyComplete
 /Users/josiah/Documents/projects/JosiahPersonalWebsite/Persistence/obj/Debug/net7.0/Persistence.dll
 /Users/josiah/Documents/projects/JosiahPersonalWebsite/Persistence/obj/Debug/net7.0/refint/Persistence.dll

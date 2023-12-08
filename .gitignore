@@ -1,0 +1,9 @@
+﻿# Ignore
+
+.env
+appsettings.json
+appsettings.Development.json
+
+!packages/build/
+*.nupkg
+

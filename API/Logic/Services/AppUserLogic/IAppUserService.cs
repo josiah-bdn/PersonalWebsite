@@ -5,7 +5,7 @@ namespace API.Logic.Services.AppUserLogic
 {
     public interface IAppUserService {
 
-        public Task CreateUserAsync(CreateAppUserDto appUser);
+        public Task UpdateUserProfileAsync(Guid userId, CompleteProfileDto appUser);
 
         public Task<GetUserDto> GetUserAsync(Guid guid);
 

@@ -41,7 +41,7 @@ namespace Persistence.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("ModifiedDate")
+                    b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UserName")
@@ -51,6 +51,47 @@ namespace Persistence.Migrations
                     b.HasKey("AppUserId");
 
                     b.ToTable("AppUser");
+                });
+
+            modelBuilder.Entity("Data.Entities.Authentication", b =>
+                {
+                    b.Property<Guid>("AppUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("HashPassword")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("LastLogin")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("LoginCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PasswordSalt")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("AppUserId");
+
+                    b.ToTable("Authentication");
+                });
+
+            modelBuilder.Entity("Data.Entities.Authentication", b =>
+                {
+                    b.HasOne("Data.Entities.AppUser", "AppUser")
+                        .WithOne("Authentication")
+                        .HasForeignKey("Data.Entities.Authentication", "AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
+                });
+
+            modelBuilder.Entity("Data.Entities.AppUser", b =>
+                {
+                    b.Navigation("Authentication")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

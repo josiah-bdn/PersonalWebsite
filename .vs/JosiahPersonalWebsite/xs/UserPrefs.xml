@@ -1,34 +1,58 @@
 ﻿<Properties StartupConfiguration="{D23E713D-49E3-450E-9C79-F26EBF3DFAEA}|https">
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
-  <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore />
-  </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.ItemProperties.Persistence FirstBuild="True" />
-  <MonoDevelop.Ide.ItemProperties.Data FirstBuild="True" />
-  <MultiItemStartupConfigurations />
-  <MonoDevelop.Ide.ItemProperties.API PreferredExecutionTarget="/Applications/Google Chrome.app" FirstBuild="True" />
-  <MonoDevelop.Ide.Workbench ActiveDocument=".editorconfig">
+  <MonoDevelop.Ide.Workbench ActiveDocument="API/Program.cs">
     <Files>
-      <File FileName="Data/Class1.cs" Line="1" Column="1" />
-      <File FileName="Persistence/Class1.cs" Line="9" Column="2" />
-      <File FileName="API/Program.cs" Line="26" Column="1" />
-      <File FileName="API/Controllers/WeatherForecastController.cs" Line="23" Column="46" />
-      <File FileName=".editorconfig" Line="14" Column="1" />
+      <File FileName="API/Logic/Services/AppUserLogic/AppUserService.cs" Line="21" Column="60" />
+      <File FileName="API/Logic/Services/AuthServiceLogic/AuthService.cs" Line="102" Column="1" />
+      <File FileName="API/Controllers/AppUserController.cs" Line="22" Column="25" />
+      <File FileName="API/Controllers/AuthenticationController.cs" Line="18" Column="1" />
+      <File FileName="API/Program.cs" Line="42" Column="1" />
+      <File FileName="API/Logic/Services/AuthServiceLogic/IAuthService.cs" Line="8" Column="69" />
+      <File FileName="Data/Entities/Authentication.cs" Line="19" Column="45" />
+      <File FileName="Persistence/DataContext.cs" Line="21" Column="39" />
+      <File FileName="Data/DTO/LoginDto.cs" Line="8" Column="54" />
+      <File FileName="API/Logic/Services/AppUserLogic/IAppUserService.cs" Line="8" Column="55" />
+      <File FileName="API/Logic/MappingProfile.cs" Line="11" Column="1" />
+      <File FileName="Data/Entities/AppUser.cs" Line="11" Column="45" />
+      <File FileName="Data/DTO/CreateAppUserDto.cs" Line="10" Column="1" />
+      <File FileName="API/.env" Line="1" Column="80" />
+      <File FileName="Data/DTO/RegisterDto.cs" Line="1" Column="1" />
+      <File FileName="API/Utils/UserIdentityHelper.cs" Line="7" Column="6" />
+      <File FileName="API/Controllers/BaseApiController.cs" Line="16" Column="14" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="JosiahPersonalWebsite" expanded="True">
+            <Node name="API" expanded="True">
+              <Node name="Controllers" expanded="True" />
+              <Node name="Logic" expanded="True">
+                <Node name="Services" expanded="True">
+                  <Node name="AppUserLogic" expanded="True" />
+                  <Node name="AuthServiceLogic" expanded="True" />
+                </Node>
+              </Node>
+              <Node name="Utils" expanded="True" />
+            </Node>
+            <Node name="Data" expanded="True">
+              <Node name="DTO" expanded="True" />
+              <Node name="Entities" expanded="True" />
+            </Node>
             <Node name="Persistence" expanded="True">
-              <Node name="DataContext.cs" selected="True" />
+              <Node name="Migrations" expanded="True" />
             </Node>
           </Node>
         </State>
       </Pad>
-      <Pad Id="MonoDevelop.Debugger.WatchPad">
-        <State />
-      </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="/Users/josiah/Documents/projects/JosiahPersonalWebsite/API/Controllers/AuthenticationController.cs" relfile="API/Controllers/AuthenticationController.cs" line="17" column="1" />
+      <Breakpoint file="/Users/josiah/Documents/projects/JosiahPersonalWebsite/API/Controllers/AppUserController.cs" relfile="API/Controllers/AppUserController.cs" line="21" column="1" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.ItemProperties.API PreferredExecutionTarget="/Applications/Google Chrome.app" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
 </Properties>

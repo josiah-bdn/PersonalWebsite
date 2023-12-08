@@ -6,6 +6,7 @@
 /Users/josiah/Documents/projects/JosiahPersonalWebsite/Data/obj/Debug/net7.0/Data.AssemblyInfoInputs.cache
 /Users/josiah/Documents/projects/JosiahPersonalWebsite/Data/obj/Debug/net7.0/Data.AssemblyInfo.cs
 /Users/josiah/Documents/projects/JosiahPersonalWebsite/Data/obj/Debug/net7.0/Data.csproj.CoreCompileInputs.cache
+/Users/josiah/Documents/projects/JosiahPersonalWebsite/Data/obj/Debug/net7.0/Data.sourcelink.json
 /Users/josiah/Documents/projects/JosiahPersonalWebsite/Data/obj/Debug/net7.0/Data.dll
 /Users/josiah/Documents/projects/JosiahPersonalWebsite/Data/obj/Debug/net7.0/refint/Data.dll
 /Users/josiah/Documents/projects/JosiahPersonalWebsite/Data/obj/Debug/net7.0/Data.pdb

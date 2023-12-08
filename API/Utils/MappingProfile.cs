@@ -5,7 +5,7 @@ using AutoMapper;
 namespace API.Logic {
     public class MappingProfile : Profile {
         public MappingProfile() {
-            CreateMap<AppUser, CreateAppUserDto>();
+            CreateMap<AppUser, CompleteProfileDto>();
 
             CreateMap<EditUserDto, AppUser>()
             .ForMember(dest => dest.ModifiedDate, opt => opt.MapFrom(src => DateTime.UtcNow))
