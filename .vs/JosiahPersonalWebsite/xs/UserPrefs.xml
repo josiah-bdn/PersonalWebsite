@@ -1,47 +1,45 @@
 ﻿<Properties StartupConfiguration="{D23E713D-49E3-450E-9C79-F26EBF3DFAEA}|https">
-  <MonoDevelop.Ide.Workbench ActiveDocument="API/Program.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument=".editorconfig">
     <Files>
-      <File FileName="API/Logic/Services/AppUserLogic/AppUserService.cs" Line="21" Column="60" />
-      <File FileName="API/Logic/Services/AuthServiceLogic/AuthService.cs" Line="102" Column="1" />
-      <File FileName="API/Controllers/AppUserController.cs" Line="22" Column="25" />
-      <File FileName="API/Controllers/AuthenticationController.cs" Line="18" Column="1" />
-      <File FileName="API/Program.cs" Line="42" Column="1" />
-      <File FileName="API/Logic/Services/AuthServiceLogic/IAuthService.cs" Line="8" Column="69" />
+      <File FileName="API/Logic/Services/AppUserLogic/AppUserService.cs" Line="10" Column="41" />
+      <File FileName="API/Logic/Services/AuthServiceLogic/AuthService.cs" Line="19" Column="1" />
+      <File FileName="API/Controllers/AppUserController.cs" Line="21" Column="1" />
+      <File FileName="API/Program.cs" Line="24" Column="1" />
+      <File FileName="API/Extensions.cs" Line="71" Column="1" />
+      <File FileName="API/Logic/Services/AuthServiceLogic/IAuthService.cs" />
       <File FileName="Data/Entities/Authentication.cs" Line="19" Column="45" />
-      <File FileName="Persistence/DataContext.cs" Line="21" Column="39" />
-      <File FileName="Data/DTO/LoginDto.cs" Line="8" Column="54" />
-      <File FileName="API/Logic/Services/AppUserLogic/IAppUserService.cs" Line="8" Column="55" />
-      <File FileName="API/Logic/MappingProfile.cs" Line="11" Column="1" />
-      <File FileName="Data/Entities/AppUser.cs" Line="11" Column="45" />
+      <File FileName="Persistence/DataContext.cs" />
+      <File FileName="Data/DTO/LoginDto.cs" />
+      <File FileName="API/Logic/Services/AppUserLogic/IAppUserService.cs" Line="7" Column="1" />
+      <File FileName="Data/Entities/AppUser.cs" Line="12" Column="1" />
       <File FileName="Data/DTO/CreateAppUserDto.cs" Line="10" Column="1" />
       <File FileName="API/.env" Line="1" Column="80" />
-      <File FileName="Data/DTO/RegisterDto.cs" Line="1" Column="1" />
-      <File FileName="API/Utils/UserIdentityHelper.cs" Line="7" Column="6" />
-      <File FileName="API/Controllers/BaseApiController.cs" Line="16" Column="14" />
+      <File FileName="Data/DTO/RegisterDto.cs" />
+      <File FileName="API/Utils/UserIdentityHelper.cs" />
+      <File FileName="API/Controllers/BaseApiController.cs" Line="20" Column="1" />
+      <File FileName="API/Utils/MappingProfile.cs" Line="8" Column="54" />
+      <File FileName="API/appsettings.json" Line="1" Column="1" />
+      <File FileName="API/appsettings.Development.json" Line="1" Column="1" />
+      <File FileName=".editorconfig" Line="1" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
-          <Node name="JosiahPersonalWebsite" expanded="True">
+          <Node name="JosiahPersonalWebsite">
             <Node name="API" expanded="True">
-              <Node name="Controllers" expanded="True" />
-              <Node name="Logic" expanded="True">
-                <Node name="Services" expanded="True">
-                  <Node name="AppUserLogic" expanded="True" />
-                  <Node name="AuthServiceLogic" expanded="True" />
-                </Node>
-              </Node>
-              <Node name="Utils" expanded="True" />
+              <Node name="appsettings.json" expanded="True" />
             </Node>
             <Node name="Data" expanded="True">
+              <Node name="Dependencies" expanded="True" />
               <Node name="DTO" expanded="True" />
               <Node name="Entities" expanded="True" />
             </Node>
-            <Node name="Persistence" expanded="True">
-              <Node name="Migrations" expanded="True" />
-            </Node>
+            <Node name="Persistence" expanded="True" />
           </Node>
         </State>
+      </Pad>
+      <Pad Id="MonoDevelop.Debugger.WatchPad">
+        <State />
       </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>
