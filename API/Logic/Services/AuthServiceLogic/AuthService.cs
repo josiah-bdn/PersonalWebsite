@@ -17,6 +17,8 @@ namespace API.Logic.Services.AuthServiceLogic {
             _db = db;
         }
 
+        // TEST REMOVE LATER //
+
         public async Task<string> RegisterUserAsync(RegisterDto register) {
 
             if (register.Password != register.ConfirmPassword) throw new ArgumentException("Passwords do no mathc");
