@@ -3,6 +3,7 @@
 .env
 appsettings.json
 appsettings.Development.json
+.vs/
 
 !packages/build/
 *.nupkg
