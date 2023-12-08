@@ -7,3 +7,6 @@ appsettings.Development.json
 !packages/build/
 *.nupkg
 
+# Ignore build folders
+**/bin/
+**/obj/
