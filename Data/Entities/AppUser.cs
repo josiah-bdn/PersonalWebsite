@@ -16,6 +16,8 @@ namespace Data.Entities {
 
         public DateTime? ModifiedDate { get; set; }
 
+        public Authentication Authentication { get; set; }
+
     }
 
 }

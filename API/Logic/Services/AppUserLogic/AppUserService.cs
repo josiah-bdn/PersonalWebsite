@@ -16,18 +16,17 @@ namespace API.Logic.Services.AppUserLogic {
             _mapper = mapper;
         }
 
-        public async Task CreateUserAsync(CreateAppUserDto appUser) {
-            var user = new AppUser {
-                AppUserId = Guid.NewGuid(),
-                Email = appUser.Email,
-                UserName = appUser.UserName,
-                FirstName = appUser.FirstName,
-                LastName = appUser.LastName,
-                CreatedDate = DateTime.UtcNow,
-                ModifiedDate = DateTime.UtcNow,
-            };
+        public async Task UpdateUserProfileAsync(Guid userId, CompleteProfileDto appUser) {
 
-            _db.Add(user);
+            var user = await _db.AppUser.Where(u => u.AppUserId == userId).FirstOrDefaultAsync();
+            if (user == null) {
+                throw new ArgumentException("User not found.");
+            }
+
+            user.FirstName = appUser.FirstName;
+            user.LastName = appUser.LastName;
+
+            _db.Update(user);
             await _db.SaveChangesAsync();
 
         }

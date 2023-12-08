@@ -2,6 +2,7 @@
 using API.Logic.Services.AppUserLogic;
 using AutoMapper;
 using Data.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,25 +15,25 @@ namespace API.Controllers {
             _userService = userService;
         }
 
-
-        [HttpPost("CreateAppUser")]
-        public async Task<IActionResult> CreateUserController(CreateAppUserDto user) {
-            await _userService.CreateUserAsync(user);
+        [Authorize]
+        [HttpPost("CompleteProfile")]
+        public async Task<IActionResult> CreateUserController(CompleteProfileDto user) {
+            await _userService.UpdateUserProfileAsync(GetUserId(), user);
             return Ok();
         }
 
-        [HttpGet("GetAppUser/{userId}")]
+        [HttpGet("GetUser/{userId}")]
         public async Task<GetUserDto> GetUserController(Guid userId) {
             return await _userService.GetUserAsync(userId);
         }
 
-        [HttpPut("EditAppUser")]
+        [HttpPut("EditUser")]
         public async Task<IActionResult> EditUserController(EditUserDto editUserDto) {
             await _userService.EditUserAsync(editUserDto);
             return Ok();
         }
 
-        [HttpDelete("DeleteAppUser/{userId}")]
+        [HttpDelete("DeleteUser/{userId}")]
         public async Task<IActionResult> DeleteUserController(Guid userId) {
             await _userService.DeleteUserAsync(userId);
             return Ok();
