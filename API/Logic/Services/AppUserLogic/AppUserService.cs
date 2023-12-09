@@ -5,6 +5,9 @@ using Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 using AutoMapper;
+using API.Exception;
+using API.ExceptionHandlers;
+using Data.Enum;
 
 namespace API.Logic.Services.AppUserLogic {
     public class AppUserService : IAppUserService {
@@ -40,13 +43,14 @@ namespace API.Logic.Services.AppUserLogic {
             }).FirstOrDefaultAsync();
 
             if (user is null) {
-                throw new Exception();
+                throw new AppException(ErrorCode.ResourceNotFound, "User not found.");
             }
             return user;
         }
 
         public async Task DeleteUserAsync(Guid userId) {
-            var user = await _db.AppUser.Where(a => a.AppUserId == userId).FirstOrDefaultAsync() ?? throw new Exception();
+            var user = await _db.AppUser.Where(a => a.AppUserId == userId).FirstOrDefaultAsync() ??
+                throw new AppException(ErrorCode.ResourceNotFound, "User not found.");
 
             _db.Remove(user);
 
@@ -54,7 +58,8 @@ namespace API.Logic.Services.AppUserLogic {
         }
 
         public async Task EditUserAsync(EditUserDto editUserDto) {
-            var user = await _db.AppUser.Where(a => a.AppUserId == editUserDto.AppUserId).FirstOrDefaultAsync() ?? throw new Exception();
+            var user = await _db.AppUser.Where(a => a.AppUserId == editUserDto.AppUserId).FirstOrDefaultAsync() ??
+                throw new AppException(ErrorCode.ResourceNotFound, "User not found.");
 
             _mapper.Map(editUserDto, user);
 

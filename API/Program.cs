@@ -1,4 +1,5 @@
-﻿using API.Extensions;
+﻿using API.Exception;
+using API.Extensions;
 using dotenv.net;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
@@ -15,6 +16,8 @@ if (app.Environment.IsDevelopment()) {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 app.UseHttpsRedirection();
 

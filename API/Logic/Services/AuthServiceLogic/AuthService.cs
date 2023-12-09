@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using Persistence;
 using Microsoft.IdentityModel.Tokens;
 using System.Text.RegularExpressions;
+using API.ExceptionHandlers;
+using Data.Enum;
+using Microsoft.Win32;
 
 namespace API.Logic.Services.AuthServiceLogic {
     public class AuthService : IAuthService {
@@ -19,15 +22,10 @@ namespace API.Logic.Services.AuthServiceLogic {
 
         public async Task<string> RegisterUserAsync(RegisterDto register) {
 
-            if (register.Password != register.ConfirmPassword) throw new ArgumentException("Passwords do no mathc");
+            ValidateRegisterData(register);
 
-            if (await _db.AppUser.AnyAsync(u => u.Email == register.Email || u.UserName == register.UserName)) throw new ArgumentException("Email and or UserName already used");
-
-            if (!IsValidEmail(register.Email)) throw new ArgumentException("Please provide a valid email");
-
-            if (!IsValidUsername(register.UserName)) throw new ArgumentException("Please provide username that conforms to requirement");
-
-            if (!IsValidPassword(register.Password)) throw new ArgumentException("Please provide a password that meets form requirements");
+            if (await _db.AppUser.AnyAsync(u => u.Email == register.Email || u.UserName == register.UserName))
+                throw new AppException(ErrorCode.AuthenticationError, "Username or password already in use.");
 
             var user = new AppUser {
                 AppUserId = Guid.NewGuid(),
@@ -104,6 +102,17 @@ namespace API.Logic.Services.AuthServiceLogic {
             return tokenHandler.WriteToken(token);
         }
 
+        private void ValidateRegisterData(RegisterDto register) {
+            if (register.Password != register.ConfirmPassword) throw new AppException(ErrorCode.AuthenticationError, "Passwords do not match");
+
+            if (!IsValidEmail(register.Email)) throw new AppException(ErrorCode.AuthenticationError, "Please provide valid email");
+
+            if (!IsValidUsername(register.UserName)) throw new AppException(ErrorCode.AuthenticationError, "Invalid username formation");
+
+            if (!IsValidPassword(register.Password)) throw new AppException(ErrorCode.AuthenticationError, "Please provide valid password");
+
+        }
+
         private bool IsValidEmail(string email) {
             if (string.IsNullOrEmpty(email)) {
                 return false;
@@ -122,11 +131,12 @@ namespace API.Logic.Services.AuthServiceLogic {
             }
 
             int minLength = 5;
-            int maxLength = 10;
+            int maxLength = 20;
 
-            var allowedUsernamePattern = @"^[a-zA-Z0-9$!@$]{5,20}%";
+            var allowedUsernamePattern = "^[a-zA-Z0-9$!@]{5,20}$";
+;
 
-            if (username.Length > minLength || username.Length < maxLength) {
+            if (username.Length < minLength || username.Length > maxLength) {
                 return false;
             }
 
@@ -134,22 +144,27 @@ namespace API.Logic.Services.AuthServiceLogic {
         }
 
         private bool IsValidPassword(string password) {
-            if (string.IsNullOrWhiteSpace(password))
+            if (string.IsNullOrWhiteSpace(password)) {
                 return false;
+            }
 
             int minLength = 8;
             int maxLength = 15;
 
             var hasNumberPattern = @"[0-9]+";
             var hasSpecialCharPattern = @"[$@!#%^&*]+";
+            var hasUpperCasePattern = @"[A-Z]+";
 
-            if (password.Length < minLength || password.Length > maxLength)
+
+            if (password.Length < minLength || password.Length > maxLength) {
                 return false;
+             }
 
             bool hasNumber = Regex.IsMatch(password, hasNumberPattern);
             bool hasSpecialChar = Regex.IsMatch(password, hasSpecialCharPattern);
+            bool hasUpperCaseLetter = Regex.IsMatch(password, hasUpperCasePattern);
 
-            return hasNumber && hasSpecialChar;
+            return hasNumber && hasSpecialChar && hasUpperCaseLetter;
         }
     }
 
