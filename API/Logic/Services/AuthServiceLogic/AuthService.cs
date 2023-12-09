@@ -15,9 +15,11 @@ using Microsoft.Win32;
 namespace API.Logic.Services.AuthServiceLogic {
     public class AuthService : IAuthService {
         private readonly DataContext _db;
+        private readonly ITokenService _tokenService;
 
-        public AuthService(DataContext db) {
+        public AuthService(DataContext db, ITokenService tokenService) {
             _db = db;
+            _tokenService = tokenService;
         }
 
         public async Task<string> RegisterUserAsync(RegisterDto register) {
@@ -34,11 +36,12 @@ namespace API.Logic.Services.AuthServiceLogic {
                 CreatedDate = DateTime.UtcNow
             };
 
-            using var hmac = new System.Security.Cryptography.HMACSHA512();
+            var (hashPassword, passwordSalt) =_tokenService.HashPassword(register.Password);
+
             var authentication = new Authentication {
                 AppUserId = user.AppUserId,
-                HashPassword = Convert.ToBase64String(hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(register.Password))),
-                PasswordSalt = Convert.ToBase64String(hmac.Key),
+                HashPassword = hashPassword,
+                PasswordSalt = passwordSalt,
                 LastLogin = DateTime.UtcNow,
                 LoginCount = 0
             };
@@ -47,8 +50,7 @@ namespace API.Logic.Services.AuthServiceLogic {
             await _db.Authentication.AddAsync(authentication);
             await _db.SaveChangesAsync();
 
-            var login = new LoginDto { Email = register.Email, Password = register.Password };
-            var token = await LoginAsync(login);
+            var token = _tokenService.GenerateJwtToken(user.AppUserId);
 
             return token;
 
@@ -58,48 +60,24 @@ namespace API.Logic.Services.AuthServiceLogic {
             var user = await _db.AppUser.Where(u => u.Email == login.Email).FirstOrDefaultAsync();
 
             if (user is null) {
-                throw new ArgumentException("Invalid email");
+                throw new AppException(ErrorCode.AuthenticationError, "Invalid Email format.");
             }
 
             var auth = await _db.Authentication.FirstOrDefaultAsync(a => a.AppUserId == user.AppUserId);
 
             if (auth == null) {
-                throw new ArgumentException("Authentication data not found.");
+                throw new AppException(ErrorCode.AuthenticationError, "Authentication invalid.");
             }
 
-            using var hmac = new System.Security.Cryptography.HMACSHA512(Convert.FromBase64String(auth.PasswordSalt));
-            var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(login.Password));
-
-            if (!computedHash.SequenceEqual(Convert.FromBase64String(auth.HashPassword))) {
-                throw new ArgumentException("Invalid password.");
+            if (!_tokenService.ValidatePassword(login.Password, auth.HashPassword, auth.PasswordSalt)) {
+                throw new AppException(ErrorCode.AuthenticationError, "Password does not meet stated requirements");
             }
 
             auth.LoginCount += 1;
             _db.Authentication.Update(auth);
             await _db.SaveChangesAsync();
 
-            return GenerateJwtToken(user.AppUserId);
-        }
-
-        private string GenerateJwtToken(Guid appUserId) {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            byte[] key = Encoding.ASCII.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET_KEY") ?? "defaultSecretKey");
-
-            string secretKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY");
-
-            key = Encoding.ASCII.GetBytes(secretKey);
-
-            var tokenDescriptor = new SecurityTokenDescriptor {
-                Subject = new ClaimsIdentity(new[]
-                {
-            new Claim(ClaimTypes.NameIdentifier, appUserId.ToString())
-        }),
-                Expires = DateTime.UtcNow.AddHours(1),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
-            };
-
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
+            return _tokenService.GenerateJwtToken(user.AppUserId);
         }
 
         private void ValidateRegisterData(RegisterDto register) {

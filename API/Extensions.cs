@@ -67,7 +67,7 @@ namespace API.Extensions {
 
             services.AddScoped<IAppUserService, AppUserService>();
             services.AddScoped<IAuthService, AuthService>();
-
+            services.AddScoped<ITokenService, TokenService>();
             services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
             return services;
