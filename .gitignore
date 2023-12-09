@@ -11,3 +11,6 @@ appsettings.Development.json
 # Ignore build folders
 **/bin/
 **/obj/
+
+#Do not ignore
+!Test/appSettings.Test.json
