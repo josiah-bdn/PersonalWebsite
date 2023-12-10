@@ -4,10 +4,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace API.Logic.Services.AuthServiceLogic
-{
-    public class TokenService : ITokenService
-    {
+namespace API.Logic.Services.AuthServiceLogic {
+    public class TokenService : ITokenService {
         private readonly string _jwtSecretKey;
 
         public TokenService(IConfiguration configuration) {

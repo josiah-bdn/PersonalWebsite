@@ -1,16 +1,10 @@
-﻿using System;
-using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
-using Data.DTO;
+﻿using Data.DTO;
 using Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
-using Microsoft.IdentityModel.Tokens;
 using System.Text.RegularExpressions;
 using API.ExceptionHandlers;
 using Data.Enum;
-using Microsoft.Win32;
 
 namespace API.Logic.Services.AuthServiceLogic {
     public class AuthService : IAuthService {
@@ -36,7 +30,7 @@ namespace API.Logic.Services.AuthServiceLogic {
                 CreatedDate = DateTime.UtcNow
             };
 
-            var (hashPassword, passwordSalt) =_tokenService.HashPassword(register.Password);
+            var (hashPassword, passwordSalt) = _tokenService.HashPassword(register.Password);
 
             var authentication = new Authentication {
                 AppUserId = user.AppUserId,
@@ -112,7 +106,7 @@ namespace API.Logic.Services.AuthServiceLogic {
             int maxLength = 20;
 
             var allowedUsernamePattern = "^[a-zA-Z0-9$!@]{5,20}$";
-;
+            ;
 
             if (username.Length < minLength || username.Length > maxLength) {
                 return false;
@@ -136,7 +130,7 @@ namespace API.Logic.Services.AuthServiceLogic {
 
             if (password.Length < minLength || password.Length > maxLength) {
                 return false;
-             }
+            }
 
             bool hasNumber = Regex.IsMatch(password, hasNumberPattern);
             bool hasSpecialChar = Regex.IsMatch(password, hasSpecialCharPattern);
