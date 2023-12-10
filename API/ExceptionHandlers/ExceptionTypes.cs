@@ -1,5 +1,4 @@
 ﻿using System;
-using API.ExceptionHandlers;
 using Data.Enum;
 
 namespace API.ExceptionHandlers {
