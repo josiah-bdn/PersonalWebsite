@@ -262,11 +262,11 @@ namespace API.Logic.Services.AuthServiceLogic {
             }
 
             int minLength = 8;
-            int maxLength = 15;
+            int maxLength = 20;
 
             var hasNumberPattern = @"[0-9]+";
             var hasSpecialCharPattern = @"[$@!#%^&*]+";
-            var hasUpperCasePattern = @"[A-Z]+";
+            var hasUpperCasePattern = @"^(?=.*[A-Z]).+$";
 
 
             if (password.Length < minLength || password.Length > maxLength) {
