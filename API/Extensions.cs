@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Persistence;
+using SendGridService;
 
 namespace API.Extensions {
     public static class ApplicationServiceExtensions {
@@ -64,6 +65,14 @@ namespace API.Extensions {
                         ClockSkew = TimeSpan.Zero
                     };
                 });
+
+            services.AddSingleton<IEmailService, SendGridEmailService>(provider =>
+            {
+                var configuration = provider.GetRequiredService<IConfiguration>();
+                var apiKey = configuration["SendGrid:ApiKey"] ?? throw new ArgumentException("Configure SendGrid API kye");
+                return new SendGridEmailService(apiKey);
+            });
+
 
             services.AddScoped<IAppUserService, AppUserService>();
             services.AddScoped<IAuthService, AuthService>();

@@ -18,6 +18,8 @@ namespace Data.Entities {
 
         public Authentication Authentication { get; set; }
 
+        public ICollection<PasswordResetRequest> PasswordResetRequests { get; set; }
+
     }
 
 }

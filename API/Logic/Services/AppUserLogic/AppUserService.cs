@@ -1,11 +1,8 @@
 ﻿using System;
 using Data.DTO;
-using System.Linq;
-using Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 using AutoMapper;
-using API.Exception;
 using API.ExceptionHandlers;
 using Data.Enum;
 

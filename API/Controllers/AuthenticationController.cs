@@ -22,6 +22,21 @@ namespace API.Controllers
         public async Task<string> LoginUserController(LoginDto login) {
             return await _authService.LoginAsync(login);        
         }
+
+        [HttpPost("ResetPasswordRequest")]
+        public async Task SendResetEmailController(string email) {
+           await _authService.SendResetEmailAsync(email);
+        }
+
+        [HttpPost("ValidateResetRequest")]
+        public async Task ValidateResetReqeustController(ResetCodeConfirmation resetRequest) {
+            await _authService.ValidateResetCodeAsync(resetRequest);
+        }
+
+        [HttpPost("ResetPassword")]
+        public async Task<string> ResetPasswordController(ResetPasswordDto reset) {
+            return await _authService.ResetPasswordAysnc(reset);
+        }
     }
 }
 

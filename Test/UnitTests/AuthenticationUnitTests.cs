@@ -3,18 +3,20 @@ using Data.DTO;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Persistence;
+using SendGridService;
 
 namespace Test;
 
-public class AuthenticationUntiTests {
+public class AuthenticationUntitTests {
     private readonly DataContext _db;
     private readonly AuthService _authService;
     private readonly Mock<ITokenService> _mockTokenService;
+    private readonly Mock<IEmailService> _mockEmailService;
 
-    public AuthenticationUntiTests() {
+    public AuthenticationUntitTests() {
         var options = new DbContextOptionsBuilder<DataContext>()
             .UseInMemoryDatabase(databaseName: "TestAuthDb")
-            .EnableSensitiveDataLogging() // Add this line
+            .EnableSensitiveDataLogging()
             .Options;
 
 
@@ -27,12 +29,14 @@ public class AuthenticationUntiTests {
         _mockTokenService.Setup(service => service.HashPassword(It.IsAny<string>()))
                          .Returns(() => ("mockedHash", "mockedSalt"));
 
+        _mockEmailService = new Mock<IEmailService>();
 
-        _authService = new AuthService(_db, _mockTokenService.Object);
+
+        _authService = new AuthService(_db, _mockTokenService.Object, _mockEmailService.Object);
     }
 
     [Fact]
-    public async void Successful_Registration_Token() {
+    public async Task Successful_Registration_Token() {
         var newUser = new RegisterDto() {
             Email = "test@test.com",
             UserName = "jimmybob",
@@ -69,8 +73,6 @@ public class AuthenticationUntiTests {
             Assert.NotNull(ex);
             Assert.Equal(ex.Message, expectedError);
         }
-
-
 
     }
 

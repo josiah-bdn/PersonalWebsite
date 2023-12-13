@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Persistence;
@@ -11,9 +12,11 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20231212194143_ResetPasswordTable")]
+    partial class ResetPasswordTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -89,12 +92,6 @@ namespace Persistence.Migrations
                     b.Property<int>("Code")
                         .HasColumnType("integer");
 
-                    b.Property<int>("CodeEntryCount")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsExpiredOrFailed")
-                        .HasColumnType("boolean");
-
                     b.Property<DateTime>("SendDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -105,7 +102,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("AppUserId");
 
-                    b.ToTable("PasswordResetRequests");
+                    b.ToTable("PasswordResetRequest");
                 });
 
             modelBuilder.Entity("Data.Entities.Authentication", b =>

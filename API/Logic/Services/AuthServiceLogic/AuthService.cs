@@ -5,15 +5,20 @@ using Persistence;
 using System.Text.RegularExpressions;
 using API.ExceptionHandlers;
 using Data.Enum;
+using SendGridService;
+using System.Text;
 
 namespace API.Logic.Services.AuthServiceLogic {
     public class AuthService : IAuthService {
         private readonly DataContext _db;
         private readonly ITokenService _tokenService;
+        private readonly IEmailService _emailService;
+        private Random _random = new Random();
 
-        public AuthService(DataContext db, ITokenService tokenService) {
+        public AuthService(DataContext db, ITokenService tokenService, IEmailService emailService) {
             _db = db;
             _tokenService = tokenService;
+            _emailService = emailService;
         }
 
         public async Task<string> RegisterUserAsync(RegisterDto register) {
@@ -40,22 +45,16 @@ namespace API.Logic.Services.AuthServiceLogic {
                 LoginCount = 0
             };
 
-            await _db.AppUser.AddAsync(user);
-            await _db.Authentication.AddAsync(authentication);
+            _db.AppUser.Add(user);
+            _db.Authentication.Add(authentication);
             await _db.SaveChangesAsync();
 
-            var token = _tokenService.GenerateJwtToken(user.AppUserId);
-
-            return token;
+            return _tokenService.GenerateJwtToken(user.AppUserId);
 
         }
 
         public async Task<string> LoginAsync(LoginDto login) {
-            var user = await _db.AppUser.Where(u => u.Email == login.Email).FirstOrDefaultAsync();
-
-            if (user is null) {
-                throw new AppException(ErrorCode.AuthenticationError, "Invalid Email format.");
-            }
+            var user = await GetAppUserAsync(login.Email);
 
             var auth = await _db.Authentication.FirstOrDefaultAsync(a => a.AppUserId == user.AppUserId);
 
@@ -72,6 +71,148 @@ namespace API.Logic.Services.AuthServiceLogic {
             await _db.SaveChangesAsync();
 
             return _tokenService.GenerateJwtToken(user.AppUserId);
+        }
+
+
+        public async Task SendResetEmailAsync(string email) {
+            var user = await GetAppUserAsync(email);
+
+            var code = GeneratePasswordResetCode();
+            var subject = "Reset Password";
+            var body = CreateResetPasswordBody(user.FirstName, code);
+
+            var resetRequest = new PasswordResetRequest {
+                PasswordRequestId = Guid.NewGuid(),
+                AppUserId = user.AppUserId,
+                Code = code,
+                SendDate = DateTime.UtcNow,
+                UserHasValidated = false,
+            };
+
+            _db.Add(resetRequest);
+            await _db.SaveChangesAsync();
+
+            await _emailService.SendEmailAsync(email, subject, body);
+        }
+
+        public async Task ValidateResetCodeAsync(ResetCodeConfirmation reset) {
+            var userId = await _db.AppUser.Where(u => u.Email == reset.Email).Select(u => u.AppUserId).FirstOrDefaultAsync();
+
+            var resetInfo = await _db.PasswordResetRequests
+                .Where(p => p.AppUserId == userId)
+                .OrderByDescending(p => p.SendDate)
+                .FirstOrDefaultAsync();
+
+            if (resetInfo == null || resetInfo.IsExpiredOrFailed == true)
+                throw new AppException(ErrorCode.AuthenticationError, "No reset request found, please reattempt");
+
+            if (reset.Code != resetInfo.Code) {
+                if (resetInfo.CodeEntryCount < 3) {
+                    resetInfo.CodeEntryCount++;
+                    await UpdatePasswordResetEntity(resetInfo);
+                    throw new AppException(ErrorCode.AuthenticationError, "Codes do not match");
+                }
+
+                resetInfo.IsExpiredOrFailed = true;
+                await UpdatePasswordResetEntity(resetInfo);
+
+                throw new AppException(ErrorCode.AuthenticationError, "Reset attempts exceeds maximum amount, please request new code");
+            }
+
+            if ((DateTime.UtcNow - resetInfo.SendDate).TotalMinutes > 10) {
+                resetInfo.IsExpiredOrFailed = true;
+                await UpdatePasswordResetEntity(resetInfo);
+
+                throw new AppException(ErrorCode.AuthenticationError, "Reset code expired, please request new code");
+            }
+
+            resetInfo.UserHasValidated = true;
+            _db.Update(resetInfo);
+            await _db.SaveChangesAsync();
+        }
+
+        public async Task<string> ResetPasswordAysnc(ResetPasswordDto reset) {
+
+            if (reset.Password != reset.ConfirmPassword)
+                throw new AppException(ErrorCode.AuthenticationError, "Password entries do not match");
+
+            if (!IsValidPassword(reset.Password)) throw new AppException(ErrorCode.AuthenticationError, "Please provide valid password");
+
+            var user = await GetAppUserAsync(reset.Email);
+
+            bool hasValidated = await _db.PasswordResetRequests
+             .Where(p => p.AppUserId == user.AppUserId)
+             .OrderByDescending(p => p.SendDate)
+             .Select(p => p.UserHasValidated).FirstOrDefaultAsync();
+
+            if (!hasValidated) throw new AppException(ErrorCode.AuthenticationError, "User has not validated reset");
+
+            var (hashPassword, passwordSalt) = _tokenService.HashPassword(reset.Password);
+
+            var authentication = await _db.Authentication.Where(a => a.AppUserId == user.AppUserId).FirstOrDefaultAsync();
+
+            if (authentication is null) throw new AppException(ErrorCode.AuthenticationError, "Authentication record could not be found");
+
+            authentication.HashPassword = hashPassword;
+            authentication.PasswordSalt = passwordSalt;
+            authentication.LastLogin = DateTime.UtcNow;
+            authentication.LoginCount++;
+
+            _db.Authentication.Update(authentication);
+            await _db.SaveChangesAsync();
+
+            return _tokenService.GenerateJwtToken(user.AppUserId);
+
+        }
+
+        private async Task<AppUser> GetAppUserAsync(string email) {
+            var user = await _db.AppUser.Where(u => u.Email == email).FirstOrDefaultAsync();
+
+            if (user is null)
+                throw new AppException(ErrorCode.AuthenticationError, "Email does not exits");
+
+            return user;
+        }
+
+        private async Task UpdatePasswordResetEntity(PasswordResetRequest req) {
+            _db.Update(req);
+            await _db.SaveChangesAsync();
+        }
+
+        private string CreateResetPasswordBody(string? firstName, int code) {
+
+            var body = new StringBuilder();
+
+            body.AppendLine($"Dear {firstName},");
+            body.AppendLine("<br>");
+            body.AppendLine("You have requested to reset your password.");
+            body.AppendLine("<br><br>");
+
+            body.AppendLine("Please click on the link below to reset your password, you will need the below 4 digit code");
+            body.AppendLine("<br>");
+
+            body.AppendLine(code.ToString());
+            body.AppendLine("<br>");
+
+            body.AppendFormat("<a href=\"{0}\">Reset Password</a>", "http://localhost:3000");
+            body.AppendLine("<br><br>");
+
+            body.AppendLine("If you did not request a password reset, please ignore this email or contact support if you have concerns.");
+            body.AppendLine("<br>");
+            body.AppendLine("Best regards,");
+            body.AppendLine("<br>");
+            body.AppendLine("Josiah");
+
+            return body.ToString();
+
+        }
+
+        private int GeneratePasswordResetCode() {
+
+            int min = 1000;
+            int max = 9999;
+
+            return _random.Next(min, max);
         }
 
         private void ValidateRegisterData(RegisterDto register) {
