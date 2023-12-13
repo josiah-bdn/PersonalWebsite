@@ -8,11 +8,13 @@ public class DataContext : DbContext {
 
     public DataContext() { }
 
-    public DataContext(DbContextOptions options) : base (options) { }
+    public DataContext(DbContextOptions options) : base(options) { }
 
     public DbSet<AppUser> AppUser { get; set; }
 
     public DbSet<Authentication> Authentication { get; set; }
+
+    public DbSet<PasswordResetRequest> PasswordResetRequests { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
         base.OnModelCreating(modelBuilder);
@@ -24,6 +26,14 @@ public class DataContext : DbContext {
             .HasOne(a => a.Authentication)
             .WithOne(b => b.AppUser)
             .HasForeignKey<Authentication>(b => b.AppUserId);
+
+        modelBuilder.Entity<PasswordResetRequest>()
+            .HasKey(p => p.PasswordRequestId);
+
+        modelBuilder.Entity<AppUser>()
+        .HasMany(a => a.PasswordResetRequests)
+        .WithOne(p => p.AppUser)
+        .HasForeignKey(p => p.AppUserId);
     }
 
 }
