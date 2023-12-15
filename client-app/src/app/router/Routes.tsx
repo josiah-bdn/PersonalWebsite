@@ -1,7 +1,7 @@
 import {createBrowserRouter, RouteObject} from "react-router-dom";
-import RegisterForm from "../features/form/RegisterForm";
-import HomePage from "../features/HomePage";
-import App from "../app/layout/App";
+import RegisterForm from "../../features/form/RegisterForm";
+import HomePage from "../../features/HomePage";
+import App from "../layout/App";
 
 export const routes: RouteObject[] = [
     {

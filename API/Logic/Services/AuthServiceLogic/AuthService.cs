@@ -19,21 +19,23 @@ namespace API.Logic.Services.AuthServiceLogic {
             _db = db;
             _tokenService = tokenService;
             _emailService = emailService;
-        }
+            }
 
         public async Task<string> RegisterUserAsync(RegisterDto register) {
 
             ValidateRegisterData(register);
 
             if (await _db.AppUser.AnyAsync(u => u.Email == register.Email || u.UserName == register.UserName))
-                throw new AppException(ErrorCode.AuthenticationError, "Username or password already in use.");
+                throw new AppException(ErrorCode.AuthenticationError, "Username or email already in use.");
 
             var user = new AppUser {
                 AppUserId = Guid.NewGuid(),
                 Email = register.Email,
+                FirstName = register.FirstName,
+                LastName = register.LastName,
                 UserName = register.UserName,
                 CreatedDate = DateTime.UtcNow
-            };
+                };
 
             var (hashPassword, passwordSalt) = _tokenService.HashPassword(register.Password);
 
@@ -43,7 +45,7 @@ namespace API.Logic.Services.AuthServiceLogic {
                 PasswordSalt = passwordSalt,
                 LastLogin = DateTime.UtcNow,
                 LoginCount = 0
-            };
+                };
 
             _db.AppUser.Add(user);
             _db.Authentication.Add(authentication);
@@ -51,7 +53,7 @@ namespace API.Logic.Services.AuthServiceLogic {
 
             return _tokenService.GenerateJwtToken(user.AppUserId);
 
-        }
+            }
 
         public async Task<string> LoginAsync(LoginDto login) {
             var user = await GetAppUserAsync(login.Email);
@@ -60,18 +62,18 @@ namespace API.Logic.Services.AuthServiceLogic {
 
             if (auth == null) {
                 throw new AppException(ErrorCode.AuthenticationError, "Authentication invalid.");
-            }
+                }
 
             if (!_tokenService.ValidatePassword(login.Password, auth.HashPassword, auth.PasswordSalt)) {
                 throw new AppException(ErrorCode.AuthenticationError, "Password does not meet stated requirements");
-            }
+                }
 
             auth.LoginCount += 1;
             _db.Authentication.Update(auth);
             await _db.SaveChangesAsync();
 
             return _tokenService.GenerateJwtToken(user.AppUserId);
-        }
+            }
 
 
         public async Task SendResetEmailAsync(string email) {
@@ -87,13 +89,13 @@ namespace API.Logic.Services.AuthServiceLogic {
                 Code = code,
                 SendDate = DateTime.UtcNow,
                 UserHasValidated = false,
-            };
+                };
 
             _db.Add(resetRequest);
             await _db.SaveChangesAsync();
 
             await _emailService.SendEmailAsync(email, subject, body);
-        }
+            }
 
         public async Task ValidateResetCodeAsync(ResetCodeConfirmation reset) {
             var userId = await _db.AppUser.Where(u => u.Email == reset.Email).Select(u => u.AppUserId).FirstOrDefaultAsync();
@@ -111,25 +113,25 @@ namespace API.Logic.Services.AuthServiceLogic {
                     resetInfo.CodeEntryCount++;
                     await UpdatePasswordResetEntity(resetInfo);
                     throw new AppException(ErrorCode.AuthenticationError, "Codes do not match");
-                }
+                    }
 
                 resetInfo.IsExpiredOrFailed = true;
                 await UpdatePasswordResetEntity(resetInfo);
 
                 throw new AppException(ErrorCode.AuthenticationError, "Reset attempts exceeds maximum amount, please request new code");
-            }
+                }
 
             if ((DateTime.UtcNow - resetInfo.SendDate).TotalMinutes > 10) {
                 resetInfo.IsExpiredOrFailed = true;
                 await UpdatePasswordResetEntity(resetInfo);
 
                 throw new AppException(ErrorCode.AuthenticationError, "Reset code expired, please request new code");
-            }
+                }
 
             resetInfo.UserHasValidated = true;
             _db.Update(resetInfo);
             await _db.SaveChangesAsync();
-        }
+            }
 
         public async Task<string> ResetPasswordAysnc(ResetPasswordDto reset) {
 
@@ -163,7 +165,7 @@ namespace API.Logic.Services.AuthServiceLogic {
 
             return _tokenService.GenerateJwtToken(user.AppUserId);
 
-        }
+            }
 
         private async Task<AppUser> GetAppUserAsync(string email) {
             var user = await _db.AppUser.Where(u => u.Email == email).FirstOrDefaultAsync();
@@ -172,12 +174,12 @@ namespace API.Logic.Services.AuthServiceLogic {
                 throw new AppException(ErrorCode.AuthenticationError, "Email does not exits");
 
             return user;
-        }
+            }
 
         private async Task UpdatePasswordResetEntity(PasswordResetRequest req) {
             _db.Update(req);
             await _db.SaveChangesAsync();
-        }
+            }
 
         private string CreateResetPasswordBody(string? firstName, int code) {
 
@@ -205,7 +207,7 @@ namespace API.Logic.Services.AuthServiceLogic {
 
             return body.ToString();
 
-        }
+            }
 
         private int GeneratePasswordResetCode() {
 
@@ -213,10 +215,12 @@ namespace API.Logic.Services.AuthServiceLogic {
             int max = 9999;
 
             return _random.Next(min, max);
-        }
+            }
 
         private void ValidateRegisterData(RegisterDto register) {
             if (register.Password != register.ConfirmPassword) throw new AppException(ErrorCode.AuthenticationError, "Passwords do not match");
+
+            if (!IsValidFirstLastNames(register.FirstName, register.LastName)) throw new AppException(ErrorCode.AuthenticationError, "Provide valid first or last naame");
 
             if (!IsValidEmail(register.Email)) throw new AppException(ErrorCode.AuthenticationError, "Please provide valid email");
 
@@ -224,24 +228,41 @@ namespace API.Logic.Services.AuthServiceLogic {
 
             if (!IsValidPassword(register.Password)) throw new AppException(ErrorCode.AuthenticationError, "Please provide valid password");
 
-        }
+            }
 
         private bool IsValidEmail(string email) {
             if (string.IsNullOrEmpty(email)) {
                 return false;
-            }
+                }
 
             var emailPattern = @"^\S+@\S+\.\S+$";
 
             var multipleDotsPaterrn = @"(\.\.)|(@\.)|(\.@)";
 
             return Regex.IsMatch(email, emailPattern) && !Regex.IsMatch(email, multipleDotsPaterrn);
-        }
+            }
+
+        private bool IsValidFirstLastNames(string firstName, string lastName) {
+            int minLength = 2;
+            int maxLength = 20;
+
+            var allowedNamePattern = "^[a-zA-Z]{2,20}$";
+
+            if (firstName.Length < minLength || lastName.Length > maxLength) {
+                return false;
+                }
+
+            var allowedFirstNamePattern = Regex.IsMatch(firstName, allowedNamePattern);
+            var allowedLastNamePattern = Regex.IsMatch(lastName, allowedNamePattern);
+
+            return allowedFirstNamePattern && allowedLastNamePattern;
+
+            }
 
         private bool IsValidUsername(string username) {
             if (string.IsNullOrWhiteSpace(username)) {
                 return false;
-            }
+                }
 
             int minLength = 5;
             int maxLength = 20;
@@ -251,15 +272,15 @@ namespace API.Logic.Services.AuthServiceLogic {
 
             if (username.Length < minLength || username.Length > maxLength) {
                 return false;
-            }
+                }
 
             return Regex.IsMatch(username, allowedUsernamePattern);
-        }
+            }
 
         private bool IsValidPassword(string password) {
             if (string.IsNullOrWhiteSpace(password)) {
                 return false;
-            }
+                }
 
             int minLength = 8;
             int maxLength = 20;
@@ -271,14 +292,14 @@ namespace API.Logic.Services.AuthServiceLogic {
 
             if (password.Length < minLength || password.Length > maxLength) {
                 return false;
-            }
+                }
 
             bool hasNumber = Regex.IsMatch(password, hasNumberPattern);
             bool hasSpecialChar = Regex.IsMatch(password, hasSpecialCharPattern);
             bool hasUpperCaseLetter = Regex.IsMatch(password, hasUpperCasePattern);
 
             return hasNumber && hasSpecialChar && hasUpperCaseLetter;
+            }
         }
-    }
 
-}
+    }
