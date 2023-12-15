@@ -220,7 +220,7 @@ namespace API.Logic.Services.AuthServiceLogic {
         private void ValidateRegisterData(RegisterDto register) {
             if (register.Password != register.ConfirmPassword) throw new AppException(ErrorCode.AuthenticationError, "Passwords do not match");
 
-            if (!IsValidFirstLastNames(register.FirstName, register.LastName)) throw new AppException(ErrorCode.AuthenticationError, "Provide valid first or last naame");
+            if (!IsValidFirstLastNames(register.FirstName, register.LastName)) throw new AppException(ErrorCode.AuthenticationError, "Provide valid first or last name");
 
             if (!IsValidEmail(register.Email)) throw new AppException(ErrorCode.AuthenticationError, "Please provide valid email");
 
