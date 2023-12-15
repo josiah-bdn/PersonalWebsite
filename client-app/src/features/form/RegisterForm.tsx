@@ -13,7 +13,10 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useState } from 'react';
-import agent from '../../api/agent';
+import agent from '../../app/api/agent';
+import { hanldeApiError } from '../../app/utils/apiError';
+import { useNavigate } from 'react-router-dom';
+
 
 const defaultTheme = createTheme();
 
@@ -21,11 +24,15 @@ export const RegisterForm = () => {
     const [formData, setFormData] = useState({
         email: '',
         username: '',
+        firstName: '',
+        lastName: '',
         password: '',
         confirmPassword: ''
     });
 
- const [showPassword, setShowPassword] = useState(false);   
+const navigate = useNavigate();
+
+const [showPassword, setShowPassword] = useState(false);   
 
 const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setShowPassword(e.target.checked);
@@ -39,10 +46,14 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-        console.log(formData);
-        await agent.Authentication.create(formData);
-    } catch (error) {
+        const res = await agent.Authentication.create(formData);
+        if (res.status === 200) {
+            navigate('/')
+        }
+
+    } catch (error: unknown) {
         console.log(error);
+        hanldeApiError(error);
     }
   };
 
@@ -110,6 +121,28 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                   label="Username"
                   id="username"
                   value={formData.username}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  name="firstName"
+                  label="First Name"
+                  id="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  name="lastName"
+                  label="Last Name"
+                  id="lastName"
+                  value={formData.lastName}
                   onChange={handleChange}
                 />
               </Grid>

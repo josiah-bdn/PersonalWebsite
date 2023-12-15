@@ -40,6 +40,8 @@ public class AuthenticationUntitTests {
         var newUser = new RegisterDto() {
             Email = "test@test.com",
             UserName = "jimmybob",
+            FirstName = "John",
+            LastName = "Approve",
             Password = "Password1@",
             ConfirmPassword = "Password1@"
         };
@@ -51,14 +53,17 @@ public class AuthenticationUntitTests {
     }
 
     [Theory]
-    [InlineData("test@test.com", "tim", "Password1@", "Password1@", "Invalid username formation")]
-    [InlineData("testattest.com", "timjohnson", "Password1@", "Password1@", "Please provide valid email")]
-    [InlineData("test1@test.com", "timjohnson", "password1@", "password1@", "Please provide valid password")]
-    [InlineData("test1@test.com", "timjohnson", "Password1@", "Password!@", "Passwords do not match")]
-    public async void Registration_Data_Checks(string email, string username, string password, string confirmPassword, string expectedError) {
+    [InlineData("test@test.com", "tim", "John", "Approve", "Password1@", "Password1@", "Invalid username formation")]
+    [InlineData("testattest.com", "timjohnson", "John", "Approve", "Password1@", "Password1@", "Please provide valid email")]
+    [InlineData("test1@test.com", "timjohnson", "John", "Approve", "password1@", "password1@", "Please provide valid password")]
+    [InlineData("test1@test.com", "timjohnson", "John", "Approve", "Password1@", "Password!@", "Passwords do not match")]
+    [InlineData("test1@test.com", "timjohnson", "T", "Approve", "Password1@", "Password1@", "Provide valid first or last name")]
+    public async void Registration_Data_Checks(string email, string username, string firstName, string lastName, string password, string confirmPassword, string expectedError) {
 
         var newUser = new RegisterDto {
             Email = email,
+            FirstName = firstName,
+            LastName = lastName,
             UserName = username,
             Password = password,
             ConfirmPassword = confirmPassword
