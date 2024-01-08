@@ -2,6 +2,7 @@
 using API.Logic;
 using API.Logic.Services.AppUserLogic;
 using API.Logic.Services.AuthServiceLogic;
+using API.Logic.Services.BlogServiceLogic;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -77,6 +78,7 @@ namespace API.Extensions {
             services.AddScoped<IAppUserService, AppUserService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IBlogService, BlogService>();
             services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
             return services;

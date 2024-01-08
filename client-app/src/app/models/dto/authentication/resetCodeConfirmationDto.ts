@@ -1,4 +1,4 @@
 export interface ResetCodeConirmationDto {
     email: string;
-    code: number; 
+    code: number;
 }

@@ -42,6 +42,7 @@
     <None Remove="Logic\Services\AuthServiceLogic\" />
     <None Remove="Utils\" />
     <None Remove="ExceptionHandlers\" />
+    <None Remove="Logic\Services\BlogServiceLogic\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Logic\" />
@@ -50,5 +51,6 @@
     <Folder Include="Logic\Services\AuthServiceLogic\" />
     <Folder Include="Utils\" />
     <Folder Include="ExceptionHandlers\" />
+    <Folder Include="Logic\Services\BlogServiceLogic\" />
   </ItemGroup>
 </Project>
