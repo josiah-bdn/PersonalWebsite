@@ -20,6 +20,8 @@ namespace Data.Entities {
 
         public ICollection<PasswordResetRequest> PasswordResetRequests { get; set; }
 
+        public ICollection<Blog>? Blogs { get; set; }
+
     }
 
 }

@@ -16,8 +16,18 @@ public class DataContext : DbContext {
 
     public DbSet<PasswordResetRequest> PasswordResetRequests { get; set; }
 
+    public DbSet<Blog> Blog { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<Blog>()
+            .HasKey(b => b.BlogId);
+
+        modelBuilder.Entity<Blog>()
+            .HasOne(b => b.AppUser)
+            .WithMany(u => u.Blogs)
+            .HasForeignKey(b => b.AppUserId);
 
         modelBuilder.Entity<Authentication>()
             .HasKey(a => a.AppUserId);
