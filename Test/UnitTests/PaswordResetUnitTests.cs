@@ -1,11 +1,8 @@
 ﻿using API.Logic.Services.AuthServiceLogic;
-using Castle.Core.Configuration;
 using Data.DTO;
 using Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
-using Microsoft.Win32;
 using Moq;
 using Persistence;
 using SendGridService;
