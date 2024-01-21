@@ -14,10 +14,10 @@ namespace API.Controllers {
 
         [Authorize]
         [HttpPost("Createblog")]
-        public async Task<IActionResult> CreateBlogController(CreateBlogDto blog) {
+        public async Task<GetBlogDto> CreateBlogController(CreateBlogDto blog) {
 
-            await _blogService.CreateBlogAsync(GetUserId(), blog);
-            return Ok();
+            return await _blogService.CreateBlogAsync(GetUserId(), blog);
+
             }
 
         [Authorize]
@@ -25,7 +25,23 @@ namespace API.Controllers {
         public async Task<GetBlogDto> GetBlogController(Guid blogId) {
             return await _blogService.GetBlogAsync(blogId);
             }
-        }
 
+
+        [Authorize]
+        [HttpDelete("DeleteBlog/{blogId}")]
+        public async Task<IActionResult> DeleteBlogController(Guid blogId) {
+            await _blogService.DeleteBlogAsync(GetUserId(), blogId);
+            return Ok();
+
+            }
+
+        [Authorize]
+        [HttpPut("UpdateBlog/{blogId}")]
+        public async Task<GetBlogDto> UpdateBlogController(Guid blogId, UpdateBlogDto updateBlog) {
+            return await _blogService.UpdateBlogAsync(GetUserId(), blogId, updateBlog);
+
+            }
+
+        }
     }
 

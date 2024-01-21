@@ -26,6 +26,8 @@ namespace Data.Entities {
 
         public DateTime? Modified { get; set; }
 
+        public bool? IsDeleted { get; set; }
+
         }
     }
 

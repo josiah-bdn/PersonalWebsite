@@ -5,7 +5,7 @@ using Moq;
 using Persistence;
 using SendGridService;
 
-namespace Test;
+namespace Test.UnitTests;
 
 public class AuthenticationUntitTests {
     private readonly DataContext _db;
