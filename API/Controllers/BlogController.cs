@@ -15,7 +15,6 @@ namespace API.Controllers {
         [Authorize]
         [HttpPost("Createblog")]
         public async Task<GetBlogDto> CreateBlogController(CreateBlogDto blog) {
-
             return await _blogService.CreateBlogAsync(GetUserId(), blog);
 
             }

@@ -2,6 +2,7 @@
 using API.Logic.Services.BlogServiceLogic;
 using AutoMapper;
 using Data.DTO;
+using Data.Enum;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 
@@ -10,6 +11,7 @@ namespace Test.UnitTests {
         private readonly DataContext _db;
         private readonly IMapper _mapper;
         private readonly BlogService _blogService;
+        private static readonly string s_validBody = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.";
 
         public BlogUnitTests() {
             var options = new DbContextOptionsBuilder<DataContext>()
@@ -154,6 +156,13 @@ namespace Test.UnitTests {
 
             await _blogService.DeleteBlogAsync(userId, newBlog.BlogId);
 
+            }
+
+        public static IEnumerable<object[]> GetTestData() {
+            return new List<object[]> {
+        new object[] { "Title must be between 5 and 100 characters", BlogCategories.Bitcoin, "Hi", s_validBody, "My image", "https://i.pravatar.cc/300/433245" },
+        new object[] { "Descritpion must be less than 50 characters", BlogCategories.Bitcoin, "the best", s_validBody, s_validBody, "My image", "https://i.pravatar.cc/300/433245" }
+            };
             }
         }
     }

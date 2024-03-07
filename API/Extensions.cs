@@ -9,12 +9,20 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Persistence;
 using SendGridService;
+using Data.Utils.SwaggerAnnotation;
 
 namespace API.Extensions {
     public static class ApplicationServiceExtensions {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config) {
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
+
+            services.AddSwaggerGen(
+                c => {
+                    c.EnableAnnotations();
+                    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Josiah's site API", Version = "v1" });
+                    c.SchemaFilter<SwaggerSchemaExampleFilter>();
+                });
 
             services.AddDbContext<DataContext>(options =>
                 options.UseNpgsql(config.GetConnectionString("DefaultConnection")));
